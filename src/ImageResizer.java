@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import javax.imageio.ImageIO;
 /*
@@ -30,54 +32,84 @@ public class ImageResizer {
 		}
     	else
     	{
-    		
-			
     		StringBuffer stringBuffer = new StringBuffer();
     		stringBuffer.append("PATH;NOME_CARTELLA;FILE_ORIGINALE;FILE_R\r\n");
     		File folder = new File(args[0]);
     		//directory base
-        	File[] listOfFile= folder.listFiles();
+        	File[] listOfFile = folder.listFiles();
         	File[] tmp;
         	//sottodirectory
+        	int countFile = 1;
         	
-        	for(File f : listOfFile)
+        	
+        	for(int i=0;i<listOfFile.length;i++)
         	{
+        		//f
         		//System.out.println("nome della dir: "+f.getName());
         		//entro e stampo tutti i file
-        		if(f.isDirectory())
+        		if(listOfFile[i].isDirectory())
         		{
         			//elenco file nella sottodirectory
-        			tmp = f.listFiles();
-        			for(File fileSub : tmp)
+        			tmp = listOfFile[i].listFiles();
+        			for(int j=0;j<tmp.length;j++)
         			{
-        				if(fileSub.isFile())
+        				if(j==0)countFile=1;
+        				//File fileSub : tmp
+        				if(tmp[j].isFile())
         				{
         	        		//System.out.println("nome della dir: "+f.getName()+" Nome del file: "+fileSub.getName());
-        	        		String estensione=  fileSub.getName().substring(fileSub.getName().lastIndexOf(".") + 1);
+        	        		String estensione =  tmp[j].getName().substring(tmp[j].getName().lastIndexOf(".") + 1);
         	        		if(estensione.equalsIgnoreCase("jpg"))
         	        		{
         	        			//System.out.println(fileSub.getName() +"TIPO IMMAGINE PATH ASSOLUTO = "+fileSub.getAbsolutePath());
         	        			//CODICE PER MODIFICA IMMAGINE
         	        			
         	        			BufferedImage srcImage;
-        	        			srcImage = ImageIO.read(new File(fileSub.getAbsolutePath()));
+        	        			srcImage = ImageIO.read(new File(tmp[j].getAbsolutePath()));
         	        			 int width = srcImage.getWidth();
         	        			 int height = srcImage.getHeight();
         	        			 if((width>=height && width>=LARGHEZZA_MAX) || (height>width && width>LARGHEZZA_MAX_ALTEZZA) )//800
         	        			 {
-        	        				 System.out.println(fileSub.getAbsolutePath());
+        	        				 System.out.println(tmp[j].getAbsolutePath());
         	        				 BufferedImage scaledImage = getScaledImage(srcImage,width,height);
         	        				 if(scaledImage==null) System.out.print("Il file e nullo?");
-        	        				 
-        	        				 String percorso = fileSub.getAbsolutePath();
-        	        				 String nuova = percorso.substring(0,percorso.length()-4);
-        	        				 String nomeCompleto = nuova+"_r.jpg";
+        	        				 //C:\Users\itteam\Desktop\Italgas\;anania_francesco;Gazometro_1.jpg;Gazometro_1_r.jpg
+        	        				 //String percorso = tmp[j].getAbsolutePath();
+        	        				 String newPercorso = args[0]+"\\"+listOfFile[i].getName()+"\\";
+
+
+        	        				 //String nuova = percorso.substring(0,percorso.length()-4);
+        	        				 String nomeCompleto = newPercorso + countFile+"_r.jpg";
         	        				 //nomefileoriginale;pathvecchioconnome;pathnuovo;\n
-        	        				 stringBuffer.append(args[0]+"\\").append(";").append(f.getName()).append(";").append(fileSub.getName()).append(";").append(fileSub.getName().substring(0,fileSub.getName().length()-4)+"_r.jpg").append("\r\n");
-        	        				// .append(fileSub.getName()).append(";").append(fileSub.getAbsolutePath()).append(";").append(nomeCompleto).append("\r\n");
+        	        				 //stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(tmp[j].getName().substring(0,tmp[j].getName().length()-4)+"_r.jpg").append("\r\n");
+        	        				 stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(nomeCompleto).append("\r\n");
         	        				 
         	        				 ImageIO.write(scaledImage, "jpg", new File(nomeCompleto));
+        	        				 
         	        			 }
+        	        			 //se è più piccolo devo copiarlo =
+        	        			 else
+        	        			 {
+        	        				 // copy file using Java 7 Files class
+        	        				 
+        	        				 //tmp[j].getAbsolutePath();
+        	        				 
+        	        				 String newPercorso = args[0]+"\\"+listOfFile[i].getName()+"\\";
+        	        				 String nomeCompleto = newPercorso + countFile+"_r.jpg";
+        	        				 stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(nomeCompleto).append("\r\n");
+
+        	        				 
+        	        				 
+        	        				 
+        	        				 File source = new File(tmp[j].getAbsolutePath());
+        	        				 //File dest = new File(listOfFile[i]+"\\"+countFile+"_r.jpg");
+        	        				 File dest = new File(nomeCompleto);
+
+        	        				 copyFile(source, dest);
+        	        				// Files.copy(file.toPath(),(new File(path + file.getName())).toPath(),StandardCopyOption.REPLACE_EXISTING);
+        	        			 }
+        	        			 countFile++;
+        	        			 
         	        		}
         				}
         			}	
@@ -95,11 +127,10 @@ public class ImageResizer {
             //write.write(stringBuffer.toString());
     	}
     }
-    public static BufferedImage getScaledImage(BufferedImage originalImage, int width, int height) {
+    public static BufferedImage getScaledImage(BufferedImage originalImage, int width, int height) 
+    {
     	int correctWidth=0;
     	int newHeight=0;
-    	
-    	
     	
     	Boolean verticale= false;
     	//verifico se è orizzontale setto larghezza 800
@@ -128,6 +159,11 @@ public class ImageResizer {
         graphics2D.drawImage(originalImage, 0, 0, correctWidth, newHeight, null);
         graphics2D.dispose();
         return resizedImage;
+    }
+    
+    private static void copyFile(File source, File dest)throws IOException 
+    {
+    	Files.copy(source.toPath(), dest.toPath(),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
    
 }
