@@ -82,7 +82,7 @@ public class ImageResizer {
         	        				 String nomeCompleto = newPercorso + countFile+"_r.jpg";
         	        				 //nomefileoriginale;pathvecchioconnome;pathnuovo;\n
         	        				 //stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(tmp[j].getName().substring(0,tmp[j].getName().length()-4)+"_r.jpg").append("\r\n");
-        	        				 stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(nomeCompleto).append("\r\n");
+        	        				 stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(countFile+"_r.jpg").append("\r\n");
         	        				 
         	        				 ImageIO.write(scaledImage, "jpg", new File(nomeCompleto));
         	        				 
@@ -96,7 +96,8 @@ public class ImageResizer {
         	        				 
         	        				 String newPercorso = args[0]+"\\"+listOfFile[i].getName()+"\\";
         	        				 String nomeCompleto = newPercorso + countFile+"_r.jpg";
-        	        				 stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(nomeCompleto).append("\r\n");
+        	        				 //stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(nomeCompleto).append("\r\n");
+        	        				 stringBuffer.append(args[0]+"\\").append(";").append(listOfFile[i].getName()).append(";").append(tmp[j].getName()).append(";").append(countFile+"_r.jpg").append("\r\n");
 
         	        				 
         	        				 
