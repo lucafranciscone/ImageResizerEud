@@ -165,8 +165,6 @@ public class ImageResizer {
     {
     	Files.copy(source.toPath(), dest.toPath(),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
-   
 }
 
 
-   
